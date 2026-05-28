@@ -1,0 +1,225 @@
+import swaggerJsdoc from 'swagger-jsdoc';
+
+const options: swaggerJsdoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Wat Phnom Penh Tmei API',
+      version: '1.0.0',
+      description: 'REST API for Wat Phnom Penh Tmei temple website',
+    },
+    servers: [
+      { url: 'http://localhost:3000', description: 'Development server' },
+    ],
+    tags: [
+      { name: 'Categories',      description: 'Article & activity categories' },
+      { name: 'Authors',         description: 'Article authors' },
+      { name: 'Monks',           description: 'Monks and novices' },
+      { name: 'Activities',      description: 'Temple activities / events' },
+      { name: 'Activity Photos', description: 'Photos belonging to an activity' },
+      { name: 'Articles',        description: 'News & Dharma articles' },
+      { name: 'Temple History',  description: 'Temple timeline / history' },
+      { name: 'Header Nav',      description: 'Header navigation menu items' },
+      { name: 'Footer',          description: 'Footer sections and links' },
+      { name: 'Contact Info',    description: 'Contact details and social links' },
+    ],
+    components: {
+      parameters: {
+        pageParam: {
+          in: 'query', name: 'page', schema: { type: 'integer', default: 1 },
+          description: 'Page number (1-based)',
+        },
+        limitParam: {
+          in: 'query', name: 'limit', schema: { type: 'integer', default: 20, maximum: 100 },
+          description: 'Items per page (max 100)',
+        },
+        searchParam: {
+          in: 'query', name: 'search', schema: { type: 'string' },
+          description: 'Case-insensitive full-text search',
+        },
+        sortParam: {
+          in: 'query', name: 'sort', schema: { type: 'string' },
+          description: 'Column name to sort by',
+        },
+        orderParam: {
+          in: 'query', name: 'order', schema: { type: 'string', enum: ['asc', 'desc'], default: 'desc' },
+          description: 'Sort direction',
+        },
+      },
+      schemas: {
+        PaginatedMeta: {
+          type: 'object',
+          properties: {
+            total:      { type: 'integer' },
+            page:       { type: 'integer' },
+            limit:      { type: 'integer' },
+            totalPages: { type: 'integer' },
+            hasNext:    { type: 'boolean' },
+            hasPrev:    { type: 'boolean' },
+          },
+        },
+        Category: {
+          type: 'object',
+          properties: {
+            id:         { type: 'integer' },
+            name:       { type: 'string' },
+            name_km:    { type: 'string' },
+            slug:       { type: 'string' },
+            created_at: { type: 'string', format: 'date-time' },
+            updated_at: { type: 'string', format: 'date-time' },
+          },
+        },
+        Author: {
+          type: 'object',
+          properties: {
+            id:         { type: 'integer' },
+            name:       { type: 'string' },
+            name_km:    { type: 'string' },
+            img_url:    { type: 'string', nullable: true },
+            bio:        { type: 'string', nullable: true },
+            bio_km:     { type: 'string', nullable: true },
+            email:      { type: 'string', nullable: true },
+            created_at: { type: 'string', format: 'date-time' },
+            updated_at: { type: 'string', format: 'date-time' },
+          },
+        },
+        Monk: {
+          type: 'object',
+          properties: {
+            id:         { type: 'integer' },
+            name:       { type: 'string' },
+            name_km:    { type: 'string' },
+            title:      { type: 'string' },
+            title_km:   { type: 'string' },
+            img_url:    { type: 'string', nullable: true },
+            join_year:  { type: 'integer' },
+            left_year:  { type: 'integer', nullable: true },
+            bio:        { type: 'string', nullable: true },
+            bio_km:     { type: 'string', nullable: true },
+            created_at: { type: 'string', format: 'date-time' },
+            updated_at: { type: 'string', format: 'date-time' },
+          },
+        },
+        Activity: {
+          type: 'object',
+          properties: {
+            id:             { type: 'integer' },
+            category_id:    { type: 'integer', nullable: true },
+            title:          { type: 'string' },
+            title_km:       { type: 'string' },
+            description:    { type: 'string', nullable: true },
+            description_km: { type: 'string', nullable: true },
+            img_url:        { type: 'string', nullable: true },
+            video_url:      { type: 'string', nullable: true },
+            event_year:     { type: 'integer' },
+            created_at:     { type: 'string', format: 'date-time' },
+            updated_at:     { type: 'string', format: 'date-time' },
+          },
+        },
+        ActivityPhoto: {
+          type: 'object',
+          properties: {
+            id:          { type: 'integer' },
+            activity_id: { type: 'integer' },
+            img_url:     { type: 'string' },
+            sort_order:  { type: 'integer' },
+            created_at:  { type: 'string', format: 'date-time' },
+          },
+        },
+        Article: {
+          type: 'object',
+          properties: {
+            id:             { type: 'integer' },
+            category_id:    { type: 'integer', nullable: true },
+            author_id:      { type: 'integer', nullable: true },
+            title:          { type: 'string', nullable: true },
+            title_km:       { type: 'string' },
+            excerpt:        { type: 'string', nullable: true },
+            excerpt_km:     { type: 'string', nullable: true },
+            content:        { type: 'string', nullable: true },
+            content_km:     { type: 'string', nullable: true },
+            img_url:        { type: 'string', nullable: true },
+            video_url:      { type: 'string', nullable: true },
+            published_date: { type: 'string', format: 'date', nullable: true },
+            read_time:      { type: 'string', nullable: true },
+            read_time_km:   { type: 'string', nullable: true },
+            created_at:     { type: 'string', format: 'date-time' },
+            updated_at:     { type: 'string', format: 'date-time' },
+          },
+        },
+        TempleHistory: {
+          type: 'object',
+          properties: {
+            id:             { type: 'integer' },
+            history_year:   { type: 'integer' },
+            title_en:       { type: 'string', nullable: true },
+            title_km:       { type: 'string', nullable: true },
+            description_en: { type: 'string', nullable: true },
+            description_km: { type: 'string', nullable: true },
+            sort_order:     { type: 'integer' },
+            created_at:     { type: 'string', format: 'date-time' },
+            updated_at:     { type: 'string', format: 'date-time' },
+          },
+        },
+        HeaderNav: {
+          type: 'object',
+          properties: {
+            id:         { type: 'integer' },
+            label:      { type: 'string' },
+            label_km:   { type: 'string' },
+            path:       { type: 'string' },
+            sort_order: { type: 'integer' },
+            is_active:  { type: 'boolean' },
+            created_at: { type: 'string', format: 'date-time' },
+            updated_at: { type: 'string', format: 'date-time' },
+          },
+        },
+        FooterSection: {
+          type: 'object',
+          properties: {
+            id:         { type: 'integer' },
+            title:      { type: 'string' },
+            title_km:   { type: 'string' },
+            sort_order: { type: 'integer' },
+            created_at: { type: 'string', format: 'date-time' },
+            updated_at: { type: 'string', format: 'date-time' },
+          },
+        },
+        FooterLink: {
+          type: 'object',
+          properties: {
+            id:         { type: 'integer' },
+            section_id: { type: 'integer' },
+            label:      { type: 'string' },
+            label_km:   { type: 'string' },
+            url:        { type: 'string' },
+            icon:       { type: 'string', nullable: true },
+            sort_order: { type: 'integer' },
+            created_at: { type: 'string', format: 'date-time' },
+            updated_at: { type: 'string', format: 'date-time' },
+          },
+        },
+        ContactInfo: {
+          type: 'object',
+          properties: {
+            id:         { type: 'integer' },
+            info_key:   { type: 'string' },
+            value_en:   { type: 'string', nullable: true },
+            value_km:   { type: 'string', nullable: true },
+            created_at: { type: 'string', format: 'date-time' },
+            updated_at: { type: 'string', format: 'date-time' },
+          },
+        },
+        Error: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
+  apis: ['./src/routes/*.ts'],
+};
+
+export default swaggerJsdoc(options);
